@@ -18,15 +18,42 @@
 
   L.control.zoom({ position: "bottomright" }).addTo(map);
 
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
-    subdomains: "abcd",
-    maxZoom: 19,
-  }).addTo(map);
+  const CARTO_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>';
+
+  // Karttapohjat: "Selkeä" näyttää paikkakunnat ja tiet selvästi, "Tumma" on
+  // hillitty yökartta. Valinta muistetaan selaimessa.
+  const baseLayers = {
+    "Selkeä": L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      attribution: CARTO_ATTR, subdomains: "abcd", maxZoom: 19,
+    }),
+    "Tumma": L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      attribution: CARTO_ATTR, subdomains: "abcd", maxZoom: 19,
+    }),
+  };
+
+  const BASEMAP_STORE = "junakartta-pohja";
+  let savedBase;
+  try { savedBase = localStorage.getItem(BASEMAP_STORE); } catch (e) { /* yksityistila */ }
+  const initialBase = baseLayers[savedBase] ? savedBase : "Selkeä";
+  baseLayers[initialBase].addTo(map);
+
+  function applyBaseBg(name) {
+    map.getContainer().style.background = name === "Tumma" ? "#0a0d12" : "#d7dce0";
+  }
+  applyBaseBg(initialBase);
+
+  map.on("baselayerchange", (e) => {
+    applyBaseBg(e.name);
+    try { localStorage.setItem(BASEMAP_STORE, e.name); } catch (err) { /* yksityistila */ }
+  });
+
+  L.control.layers(baseLayers, null, { position: "bottomright" }).addTo(map);
+
+  map.attributionControl.addAttribution('Junatiedot: <a href="https://www.digitraffic.fi/rautatieliikenne/">Fintraffic / digitraffic.fi</a> (CC BY 4.0)');
 
   // Rautatieverkko OpenRailwayMapin tasona.
   const railLayer = L.tileLayer("https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png", {
-    attribution: 'Rataverkko: <a href="https://www.openrailwaymap.org/">OpenRailwayMap</a> (CC-BY-SA) | Junatiedot: <a href="https://www.digitraffic.fi/rautatieliikenne/">Fintraffic / digitraffic.fi</a> (CC BY 4.0)',
+    attribution: 'Rataverkko: <a href="https://www.openrailwaymap.org/">OpenRailwayMap</a> (CC-BY-SA)',
     subdomains: "abc",
     maxZoom: 19,
     opacity: 0.55,

@@ -391,6 +391,30 @@ select.input { cursor: pointer; }
 .map-btn.active svg { fill: #4da3ff; }
 .map-btn.active { box-shadow: 0 0 12px rgba(57, 135, 229, 0.4) inset; }
 
+.leaflet-control-layers {
+  background: var(--glass) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--shadow) !important;
+  color: var(--text);
+}
+.leaflet-control-layers-toggle {
+  width: 34px !important;
+  height: 34px !important;
+  background-size: 18px 18px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23f2f4f8"><path d="M12 3 2 8l10 5 10-5-10-5Zm-7.5 8.6L2 13l10 5 10-5-2.5-1.4L12 15.6l-7.5-4Zm0 5L2 18l10 5 10-5-2.5-1.4L12 20.6l-7.5-4Z"/></svg>') !important;
+}
+.leaflet-control-layers-expanded {
+  padding: 10px 14px !important;
+  font-size: 13px;
+  font-weight: 600;
+}
+.leaflet-control-layers label { color: var(--text-2); cursor: pointer; }
+.leaflet-control-layers label:hover { color: var(--text); }
+.leaflet-control-layers input[type="radio"] { accent-color: var(--accent); }
+
 .leaflet-control-attribution {
   background: rgba(10, 13, 18, 0.75) !important;
   color: var(--muted) !important;

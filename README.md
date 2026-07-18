@@ -31,7 +31,10 @@ liikenteen tunnusluvut lasketaan lennossa.
   on nuoli, joka osoittaa kulkusuuntaan; pysähtynyt juna näkyy pisteenä.
 - **Junatyypit väreillä**: kaukojunat (sininen), lähijunat (vihreä),
   tavarajunat (oranssi) ja muu liikenne (harmaa) – selite kartan kulmassa.
-- **Rautatieverkko** OpenRailwayMap-tasona tumman taustakartan päällä;
+- **Kaksi karttapohjaa**: oletuksena selkeä kartta, jossa paikkakunnat ja tiet
+  erottuvat hyvin, sekä vaihtoehtona tumma yökartta. Valinta tehdään kartan
+  tasovalitsimesta ja se muistetaan selaimessa.
+- **Rautatieverkko** OpenRailwayMap-tasona taustakartan päällä;
   tason voi kytkeä päälle/pois kartan napista.
 - **Junahaku**: hae junanumerolla, lähijunan linjatunnuksella (esim. `U`) tai
   asemalla. Valinta lukitsee kartan seuraamaan junaa – seuranta päättyy
