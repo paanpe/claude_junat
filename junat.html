@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kulussa olevat junat – Junakartta</title>
+  <meta name="description" content="Kaikki Suomessa juuri nyt kulussa olevat junat: reitit, nopeudet ja myöhästymiset. Tiedot: Fintraffic / digitraffic.fi.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚆</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <span class="logo"><svg viewBox="0 0 24 24"><path d="M9 2a1 1 0 0 0-1 1v1H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h.28l-1.17 1.4a1 1 0 1 0 1.54 1.28L9.87 20h4.26l2.22 2.68a1 1 0 0 0 1.54-1.28L16.72 20H17a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3h-1V3a1 1 0 0 0-1-1H9Zm-3 5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v4H6V7Zm2 8.5A1.5 1.5 0 1 1 8 12.5a1.5 1.5 0 0 1 0 3Zm8 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z"/></svg></span>
+      <span class="word">Junakartta</span>
+    </a>
+    <nav class="site-nav">
+      <a href="index.html">Kartta</a>
+      <a href="junat.html" class="active">Kulussa olevat</a>
+      <a href="tilastot.html">Tilastot</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <h1 class="page-title">Kulussa olevat <span class="hl">junat</span></h1>
+    <p class="page-sub">Kaikki Suomessa juuri nyt liikkeellä olevat junat. Klikkaa junaa nähdäksesi sen kartalla.</p>
+
+    <div id="error-banner" class="error-banner">Yhteys Digitrafficiin epäonnistui – yritetään uudelleen automaattisesti.</div>
+
+    <div id="summary-chips" class="summary-chips"></div>
+
+    <div class="toolbar">
+      <input id="filter-text" class="input" type="search" placeholder="Suodata: juna, numero tai asema…" autocomplete="off">
+      <div class="chip-row">
+        <button class="chip active" data-cat="kaikki">Kaikki</button>
+        <button class="chip" data-cat="kauko">Kaukojunat</button>
+        <button class="chip" data-cat="lahi">Lähijunat</button>
+        <button class="chip" data-cat="tavara">Tavarajunat</button>
+        <button class="chip" data-cat="muu">Muut</button>
+      </div>
+      <div class="spacer"></div>
+      <select id="sort-select" class="input" aria-label="Järjestä">
+        <option value="numero">Järjestä: junanumero</option>
+        <option value="nopeus">Järjestä: nopeus</option>
+        <option value="myohassa">Järjestä: myöhästyminen</option>
+      </select>
+    </div>
+
+    <div id="train-list" class="card train-list">
+      <div class="skel"><span class="spin"></span>Ladataan kulussa olevia junia…</div>
+    </div>
+
+    <p id="updated-note" class="updated-note"></p>
+  </main>
+
+  <footer class="site-footer">
+    Liikennetiedot: <a href="https://www.digitraffic.fi/rautatieliikenne/">Fintraffic / digitraffic.fi</a>, lisenssi CC BY 4.0.
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/junat.js"></script>
+</body>
+</html>
