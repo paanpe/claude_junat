@@ -18,15 +18,42 @@
 
   L.control.zoom({ position: "bottomright" }).addTo(map);
 
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
-    subdomains: "abcd",
-    maxZoom: 19,
-  }).addTo(map);
+  const CARTO_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>';
+
+  // Karttapohjat: "Selkeä" näyttää paikkakunnat ja tiet selvästi, "Tumma" on
+  // hillitty yökartta. Valinta muistetaan selaimessa.
+  const baseLayers = {
+    "Selkeä": L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      attribution: CARTO_ATTR, subdomains: "abcd", maxZoom: 19,
+    }),
+    "Tumma": L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      attribution: CARTO_ATTR, subdomains: "abcd", maxZoom: 19,
+    }),
+  };
+
+  const BASEMAP_STORE = "junakartta-pohja";
+  let savedBase;
+  try { savedBase = localStorage.getItem(BASEMAP_STORE); } catch (e) { /* yksityistila */ }
+  const initialBase = baseLayers[savedBase] ? savedBase : "Selkeä";
+  baseLayers[initialBase].addTo(map);
+
+  function applyBaseBg(name) {
+    map.getContainer().style.background = name === "Tumma" ? "#0a0d12" : "#d7dce0";
+  }
+  applyBaseBg(initialBase);
+
+  map.on("baselayerchange", (e) => {
+    applyBaseBg(e.name);
+    try { localStorage.setItem(BASEMAP_STORE, e.name); } catch (err) { /* yksityistila */ }
+  });
+
+  L.control.layers(baseLayers, null, { position: "bottomright" }).addTo(map);
+
+  map.attributionControl.addAttribution('Junatiedot: <a href="https://www.digitraffic.fi/rautatieliikenne/">Fintraffic / digitraffic.fi</a> (CC BY 4.0)');
 
   // Rautatieverkko OpenRailwayMapin tasona.
   const railLayer = L.tileLayer("https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png", {
-    attribution: 'Rataverkko: <a href="https://www.openrailwaymap.org/">OpenRailwayMap</a> (CC-BY-SA) | Junatiedot: <a href="https://www.digitraffic.fi/rautatieliikenne/">Fintraffic / digitraffic.fi</a> (CC BY 4.0)',
+    attribution: 'Rataverkko: <a href="https://www.openrailwaymap.org/">OpenRailwayMap</a> (CC-BY-SA)',
     subdomains: "abc",
     maxZoom: 19,
     opacity: 0.55,
@@ -47,6 +74,7 @@
   let followKey = null;
   let lastPositions = [];
   let pendingFollowNumber = new URLSearchParams(location.search).get("juna");
+  let filterCat = "kaikki";
 
   const statusChip = document.getElementById("status-chip");
   const statusText = document.getElementById("status-text");
@@ -91,6 +119,40 @@
     return d ? API.categoryOf(d) : "muu";
   }
 
+  /* ---------- Junatyyppisuodatin ---------- */
+
+  function matchesFilter(cat) {
+    return filterCat === "kaikki" || cat === filterCat;
+  }
+
+  function setMarkerVisible(entry, visible) {
+    const onMap = map.hasLayer(entry.marker);
+    if (visible && !onMap) {
+      entry.marker.addTo(map);
+      applyMarkerDom(entry);
+    } else if (!visible && onMap) {
+      map.removeLayer(entry.marker);
+    }
+  }
+
+  function setFilter(cat) {
+    filterCat = cat;
+    document.querySelectorAll("#map-filter .chip").forEach((c) =>
+      c.classList.toggle("active", c.dataset.cat === cat));
+    for (const entry of markers.values()) {
+      setMarkerVisible(entry, matchesFilter(entry.cat));
+    }
+    if (followKey) {
+      const entry = markers.get(followKey);
+      if (entry && !matchesFilter(entry.cat)) stopFollow();
+    }
+    updateStatusCount();
+  }
+
+  document.querySelectorAll("#map-filter .chip").forEach((chip) => {
+    chip.addEventListener("click", () => setFilter(chip.dataset.cat));
+  });
+
   function applyMarkerDom(entry) {
     const el = entry.marker.getElement();
     if (!el) return;
@@ -119,10 +181,10 @@
 
       if (!entry) {
         const marker = L.marker(latlng, { icon: makeIcon(label, cat, moving), keyboard: false });
-        marker.addTo(map);
         entry = { key, marker, from: latlng, to: latlng, start: now, dur: 0, bearing: 0, miss: 0, cat, label, moving, pos };
         markers.set(key, entry);
         marker.on("click", () => openPopup(entry));
+        if (matchesFilter(cat)) marker.addTo(map);
       } else {
         const cur = entry.marker.getLatLng();
         entry.from = cur;
@@ -140,6 +202,7 @@
           entry.moving = moving;
           entry.marker.setIcon(makeIcon(label, cat, moving));
         }
+        setMarkerVisible(entry, matchesFilter(entry.cat));
       }
       applyMarkerDom(entry);
     }
@@ -230,6 +293,8 @@
     followKey = key;
     const entry = markers.get(key);
     if (entry) {
+      // Haettu juna näkyviin, vaikka suodatin piilottaisi sen.
+      if (!matchesFilter(entry.cat)) setFilter("kaikki");
       if (map.getZoom() < 10) map.setView(entry.marker.getLatLng(), 10);
       else map.panTo(entry.marker.getLatLng());
       applyMarkerDom(entry);
@@ -415,12 +480,26 @@
     statusText.innerHTML = text;
   }
 
+  let lastUpdateClock = "";
+
+  function updateStatusCount() {
+    if (!lastUpdateClock) return;
+    if (filterCat === "kaikki") {
+      setStatus(true, "<b>" + lastPositions.length + "</b>&nbsp;junaa kulussa &middot; " + lastUpdateClock);
+    } else {
+      let visible = 0;
+      for (const e of markers.values()) if (map.hasLayer(e.marker)) visible++;
+      setStatus(true, "<b>" + visible + "</b>&nbsp;/ " + lastPositions.length + " junaa &middot; " + lastUpdateClock);
+    }
+  }
+
   async function pollLocations() {
     try {
       const positions = await API.getTrainLocations();
       lastPositions = positions;
       upsertMarkers(positions);
-      setStatus(true, "<b>" + positions.length + "</b>&nbsp;junaa kulussa &middot; " + API.fmtClock());
+      lastUpdateClock = API.fmtClock();
+      updateStatusCount();
       if (pendingFollowNumber) {
         const hit = [...markers.values()].find((m) => String(m.pos.trainNumber) === String(pendingFollowNumber));
         if (hit) {

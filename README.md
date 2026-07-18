@@ -31,11 +31,18 @@ liikenteen tunnusluvut lasketaan lennossa.
   on nuoli, joka osoittaa kulkusuuntaan; pysähtynyt juna näkyy pisteenä.
 - **Junatyypit väreillä**: kaukojunat (sininen), lähijunat (vihreä),
   tavarajunat (oranssi) ja muu liikenne (harmaa) – selite kartan kulmassa.
-- **Rautatieverkko** OpenRailwayMap-tasona tumman taustakartan päällä;
+- **Kaksi karttapohjaa**: oletuksena selkeä kartta, jossa paikkakunnat ja tiet
+  erottuvat hyvin, sekä vaihtoehtona tumma yökartta. Valinta tehdään kartan
+  tasovalitsimesta ja se muistetaan selaimessa.
+- **Rautatieverkko** OpenRailwayMap-tasona taustakartan päällä;
   tason voi kytkeä päälle/pois kartan napista.
+- **Junatyyppisuodatin**: kartan junat voi rajata kauko-, lähi- tai
+  tavarajuniin (tai muuhun liikenteeseen); tilannesiru näyttää näkyvien
+  junien osuuden.
 - **Junahaku**: hae junanumerolla, lähijunan linjatunnuksella (esim. `U`) tai
   asemalla. Valinta lukitsee kartan seuraamaan junaa – seuranta päättyy
-  raahaamalla karttaa tai sirun ✕-napista.
+  raahaamalla karttaa tai sirun ✕-napista. Haku löytää junat myös
+  suodattimen yli.
 - **Junan tietoruutu**: klikkaus näyttää reitin, nopeuden, myöhästymistilanteen,
   seuraavan pysähdyksen ja operaattorin sekä *Seuraa junaa* -napin.
 - **Paikannusnappi** 📍: näyttää oman sijainnin tarkkuusympyröineen ja
@@ -53,9 +60,20 @@ liikenteen tunnusluvut lasketaan lennossa.
 - Rivin klikkaus avaa junan kartalle.
 - Tiedot päivittyvät automaattisesti 30 sekunnin välein.
 
+### 🚈 Junatyypit (`junatyypit.html`)
+
+Kulussa olevat junat ryhmiteltynä junatyypin (IC, S, P, PYO, HL, HDM, T, PAI
+ym.) mukaan. Jokaisesta tyypistä näytetään:
+
+- suomenkielinen kuvaus (esim. IC = InterCity, S = Pendolino,
+  HDM = kiskobussi, T = tavarajuna),
+- livetilastot: junien määrä, keskinopeus, täsmällisyys ja myöhästymiset,
+- kulussa olevat junat myöhästymistietoineen – klikkaus avaa junan kartalle.
+
 ### 📊 Tilastot (`tilastot.html`)
 
-Livenä kulussa olevien junien tiedoista lasketut tunnusluvut:
+Junatyyppisuodattimella (kaikki / kauko / lähi / tavara / muut) rajattavat,
+livenä kulussa olevien junien tiedoista lasketut tunnusluvut:
 
 - junien määrä, keskinopeus ja kovin vauhti (juna ja reitti),
 - täsmällisyysprosentti (enintään 5 min myöhässä), keskimyöhästyminen ja
@@ -107,6 +125,7 @@ sovellus ei riipu CDN-palveluista.
 .
 ├── index.html                   # Karttasivu
 ├── junat.html                   # Kulussa olevat junat
+├── junatyypit.html              # Junatyypit
 ├── tilastot.html                # Tilastot
 ├── css/
 │   └── style.css                # Yhteinen ulkoasu (tumma teema)
@@ -114,6 +133,7 @@ sovellus ei riipu CDN-palveluista.
 │   ├── api.js                   # Digitraffic-rajapintakerros, apufunktiot ja mock-tila
 │   ├── map.js                   # Karttalogiikka: merkit, animointi, haku, seuranta, paikannus
 │   ├── junat.js                 # Junalistan suodatus, lajittelu ja renderöinti
+│   ├── junatyypit.js            # Junatyyppien ryhmittely ja tyyppikortit
 │   └── tilastot.js              # Tunnuslukujen laskenta ja kaaviot
 ├── vendor/
 │   └── leaflet/                 # Leaflet 1.9.4 (vendoroitu)

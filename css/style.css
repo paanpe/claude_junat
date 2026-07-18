@@ -271,6 +271,9 @@ select.input { cursor: pointer; }
 }
 .search-box .input { width: 100%; padding-left: 34px; }
 
+.map-filter { margin-top: 9px; }
+.map-filter .chip { font-size: 12px; padding: 4px 10px; }
+
 .search-results {
   margin-top: 8px;
   max-height: 320px;
@@ -390,6 +393,30 @@ select.input { cursor: pointer; }
 .map-btn svg { width: 17px; height: 17px; fill: var(--text); }
 .map-btn.active svg { fill: #4da3ff; }
 .map-btn.active { box-shadow: 0 0 12px rgba(57, 135, 229, 0.4) inset; }
+
+.leaflet-control-layers {
+  background: var(--glass) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--shadow) !important;
+  color: var(--text);
+}
+.leaflet-control-layers-toggle {
+  width: 34px !important;
+  height: 34px !important;
+  background-size: 18px 18px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23f2f4f8"><path d="M12 3 2 8l10 5 10-5-10-5Zm-7.5 8.6L2 13l10 5 10-5-2.5-1.4L12 15.6l-7.5-4Zm0 5L2 18l10 5 10-5-2.5-1.4L12 20.6l-7.5-4Z"/></svg>') !important;
+}
+.leaflet-control-layers-expanded {
+  padding: 10px 14px !important;
+  font-size: 13px;
+  font-weight: 600;
+}
+.leaflet-control-layers label { color: var(--text-2); cursor: pointer; }
+.leaflet-control-layers label:hover { color: var(--text); }
+.leaflet-control-layers input[type="radio"] { accent-color: var(--accent); }
 
 .leaflet-control-attribution {
   background: rgba(10, 13, 18, 0.75) !important;
@@ -602,6 +629,84 @@ select.input { cursor: pointer; }
 .top-table .v { text-align: right; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
 .updated-note { color: var(--muted); font-size: 12.5px; margin-top: 22px; }
+
+.stats-filter { margin-bottom: 20px; }
+
+/* ---------- Junatyypit ---------- */
+
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 14px;
+}
+
+.type-card { padding: 20px 22px; }
+
+.type-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.type-code {
+  min-width: 56px;
+  height: 56px;
+  padding: 0 10px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #fff;
+  box-shadow: 0 0 16px var(--glow, rgba(57, 135, 229, 0.35));
+}
+.type-code.kauko { background: var(--cat-kauko); --glow: rgba(57, 135, 229, 0.4); }
+.type-code.lahi { background: var(--cat-lahi); --glow: rgba(27, 175, 122, 0.4); }
+.type-code.tavara { background: var(--cat-tavara); --glow: rgba(217, 89, 38, 0.4); }
+.type-code.muu { background: #5c5c58; --glow: rgba(137, 135, 129, 0.3); }
+
+.type-head h3 { margin: 0; font-size: 17px; font-weight: 800; }
+.type-head .type-cat { color: var(--muted); font-size: 12.5px; font-weight: 600; }
+
+.type-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.type-stat {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 9px 12px;
+}
+.type-stat .v { font-size: 19px; font-weight: 800; line-height: 1.2; }
+.type-stat .v .u { font-size: 11.5px; font-weight: 600; color: var(--text-2); margin-left: 2px; }
+.type-stat .l { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+
+.type-trains { display: flex; flex-wrap: wrap; gap: 7px; }
+.type-train {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.13s;
+}
+.type-train:hover { color: var(--text); border-color: rgba(57, 135, 229, 0.55); background: rgba(57, 135, 229, 0.12); }
+.type-train b { color: var(--text); }
+.type-train .d-late { color: #fac95e; }
+.type-train .d-verylate { color: #ef8686; }
+.type-train .d-ok { color: #6fdc6f; }
+.type-more { color: var(--muted); font-size: 12.5px; align-self: center; }
 
 .error-banner {
   display: none;
