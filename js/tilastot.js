@@ -59,6 +59,18 @@
     ).join("") + "</tbody></table>";
   }
 
+  let category = "kaikki";
+  let lastData = null;
+
+  document.querySelectorAll("#stats-filter .chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll("#stats-filter .chip").forEach((c) => c.classList.remove("active"));
+      chip.classList.add("active");
+      category = chip.dataset.cat;
+      if (lastData) compute(lastData.trains, lastData.positions, lastData.stations);
+    });
+  });
+
   async function refresh() {
     try {
       const [trains, positions, stations] = await Promise.all([
@@ -67,6 +79,7 @@
         API.getStations().catch(() => null),
       ]);
       errorEl.classList.remove("on");
+      lastData = { trains, positions, stations };
       compute(trains, positions, stations);
       updatedEl.textContent = "Päivitetty " + API.fmtClock() +
         " · luvut lasketaan kulussa olevista junista ja päivittyvät minuutin välein. " +
@@ -77,7 +90,15 @@
     }
   }
 
-  function compute(trains, positions, stations) {
+  function compute(allTrains, allPositions, stations) {
+    // Junatyyppisuodatin: rajataan sekä aikataulutiedot että GPS-sijainnit.
+    const catByKey = new Map(allTrains.map((t) => [API.trainKey(t), API.categoryOf(t)]));
+    const trains = category === "kaikki"
+      ? allTrains : allTrains.filter((t) => API.categoryOf(t) === category);
+    const positions = category === "kaikki"
+      ? allPositions
+      : allPositions.filter((p) => (catByKey.get(p.departureDate + ":" + p.trainNumber) || "muu") === category);
+
     const speedByKey = new Map(positions.map((p) => [p.departureDate + ":" + p.trainNumber, p.speed || 0]));
     const joined = trains.map((t) => ({
       t,

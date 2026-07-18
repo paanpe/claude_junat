@@ -74,6 +74,7 @@
   let followKey = null;
   let lastPositions = [];
   let pendingFollowNumber = new URLSearchParams(location.search).get("juna");
+  let filterCat = "kaikki";
 
   const statusChip = document.getElementById("status-chip");
   const statusText = document.getElementById("status-text");
@@ -118,6 +119,40 @@
     return d ? API.categoryOf(d) : "muu";
   }
 
+  /* ---------- Junatyyppisuodatin ---------- */
+
+  function matchesFilter(cat) {
+    return filterCat === "kaikki" || cat === filterCat;
+  }
+
+  function setMarkerVisible(entry, visible) {
+    const onMap = map.hasLayer(entry.marker);
+    if (visible && !onMap) {
+      entry.marker.addTo(map);
+      applyMarkerDom(entry);
+    } else if (!visible && onMap) {
+      map.removeLayer(entry.marker);
+    }
+  }
+
+  function setFilter(cat) {
+    filterCat = cat;
+    document.querySelectorAll("#map-filter .chip").forEach((c) =>
+      c.classList.toggle("active", c.dataset.cat === cat));
+    for (const entry of markers.values()) {
+      setMarkerVisible(entry, matchesFilter(entry.cat));
+    }
+    if (followKey) {
+      const entry = markers.get(followKey);
+      if (entry && !matchesFilter(entry.cat)) stopFollow();
+    }
+    updateStatusCount();
+  }
+
+  document.querySelectorAll("#map-filter .chip").forEach((chip) => {
+    chip.addEventListener("click", () => setFilter(chip.dataset.cat));
+  });
+
   function applyMarkerDom(entry) {
     const el = entry.marker.getElement();
     if (!el) return;
@@ -146,10 +181,10 @@
 
       if (!entry) {
         const marker = L.marker(latlng, { icon: makeIcon(label, cat, moving), keyboard: false });
-        marker.addTo(map);
         entry = { key, marker, from: latlng, to: latlng, start: now, dur: 0, bearing: 0, miss: 0, cat, label, moving, pos };
         markers.set(key, entry);
         marker.on("click", () => openPopup(entry));
+        if (matchesFilter(cat)) marker.addTo(map);
       } else {
         const cur = entry.marker.getLatLng();
         entry.from = cur;
@@ -167,6 +202,7 @@
           entry.moving = moving;
           entry.marker.setIcon(makeIcon(label, cat, moving));
         }
+        setMarkerVisible(entry, matchesFilter(entry.cat));
       }
       applyMarkerDom(entry);
     }
@@ -257,6 +293,8 @@
     followKey = key;
     const entry = markers.get(key);
     if (entry) {
+      // Haettu juna näkyviin, vaikka suodatin piilottaisi sen.
+      if (!matchesFilter(entry.cat)) setFilter("kaikki");
       if (map.getZoom() < 10) map.setView(entry.marker.getLatLng(), 10);
       else map.panTo(entry.marker.getLatLng());
       applyMarkerDom(entry);
@@ -442,12 +480,26 @@
     statusText.innerHTML = text;
   }
 
+  let lastUpdateClock = "";
+
+  function updateStatusCount() {
+    if (!lastUpdateClock) return;
+    if (filterCat === "kaikki") {
+      setStatus(true, "<b>" + lastPositions.length + "</b>&nbsp;junaa kulussa &middot; " + lastUpdateClock);
+    } else {
+      let visible = 0;
+      for (const e of markers.values()) if (map.hasLayer(e.marker)) visible++;
+      setStatus(true, "<b>" + visible + "</b>&nbsp;/ " + lastPositions.length + " junaa &middot; " + lastUpdateClock);
+    }
+  }
+
   async function pollLocations() {
     try {
       const positions = await API.getTrainLocations();
       lastPositions = positions;
       upsertMarkers(positions);
-      setStatus(true, "<b>" + positions.length + "</b>&nbsp;junaa kulussa &middot; " + API.fmtClock());
+      lastUpdateClock = API.fmtClock();
+      updateStatusCount();
       if (pendingFollowNumber) {
         const hit = [...markers.values()].find((m) => String(m.pos.trainNumber) === String(pendingFollowNumber));
         if (hit) {

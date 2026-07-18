@@ -19,6 +19,7 @@
     <nav class="site-nav">
       <a href="index.html" class="active">Kartta</a>
       <a href="junat.html">Kulussa olevat</a>
+      <a href="junatyypit.html">Junatyypit</a>
       <a href="tilastot.html">Tilastot</a>
     </nav>
   </header>
@@ -29,6 +30,13 @@
     <div class="search-box">
       <svg viewBox="0 0 24 24"><path d="M10 2a8 8 0 1 0 4.9 14.32l5.39 5.39a1 1 0 0 0 1.42-1.42l-5.39-5.39A8 8 0 0 0 10 2Zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z"/></svg>
       <input id="search-input" class="input" type="search" placeholder="Hae junaa: numero, linja tai asema…" autocomplete="off">
+    </div>
+    <div class="chip-row map-filter" id="map-filter">
+      <button class="chip active" data-cat="kaikki">Kaikki</button>
+      <button class="chip" data-cat="kauko">Kauko</button>
+      <button class="chip" data-cat="lahi">Lähi</button>
+      <button class="chip" data-cat="tavara">Tavara</button>
+      <button class="chip" data-cat="muu">Muut</button>
     </div>
     <div id="search-results" class="search-results"></div>
   </div>
