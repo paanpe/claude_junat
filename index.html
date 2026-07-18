@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Junakartta – Suomen junaliikenne livenä</title>
+  <meta name="description" content="Interaktiivinen kartta Suomen junaliikenteestä: junat liikkuvat kartalla reaaliajassa. Tiedot: Fintraffic / digitraffic.fi.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚆</text></svg>">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <span class="logo"><svg viewBox="0 0 24 24"><path d="M9 2a1 1 0 0 0-1 1v1H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h.28l-1.17 1.4a1 1 0 1 0 1.54 1.28L9.87 20h4.26l2.22 2.68a1 1 0 0 0 1.54-1.28L16.72 20H17a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3h-1V3a1 1 0 0 0-1-1H9Zm-3 5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v4H6V7Zm2 8.5A1.5 1.5 0 1 1 8 12.5a1.5 1.5 0 0 1 0 3Zm8 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z"/></svg></span>
+      <span class="word">Junakartta</span>
+    </a>
+    <nav class="site-nav">
+      <a href="index.html" class="active">Kartta</a>
+      <a href="junat.html">Kulussa olevat</a>
+      <a href="tilastot.html">Tilastot</a>
+    </nav>
+  </header>
+
+  <div id="map"></div>
+
+  <div class="map-panel search-panel">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24"><path d="M10 2a8 8 0 1 0 4.9 14.32l5.39 5.39a1 1 0 0 0 1.42-1.42l-5.39-5.39A8 8 0 0 0 10 2Zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z"/></svg>
+      <input id="search-input" class="input" type="search" placeholder="Hae junaa: numero, linja tai asema…" autocomplete="off">
+    </div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+
+  <div id="status-chip" class="map-panel status-chip">
+    <span class="pulse"></span>
+    <span id="status-text">Ladataan junia…</span>
+  </div>
+
+  <div id="follow-chip" class="map-panel follow-chip">
+    <span id="follow-text"></span>
+    <button id="follow-stop" title="Lopeta seuranta" aria-label="Lopeta seuranta">✕</button>
+  </div>
+
+  <div class="map-panel map-legend">
+    <div class="lg-title">Junat kartalla</div>
+    <div><span class="cat-dot kauko"></span>Kaukojuna</div>
+    <div><span class="cat-dot lahi"></span>Lähijuna</div>
+    <div><span class="cat-dot tavara"></span>Tavarajuna</div>
+    <div><span class="cat-dot muu"></span>Muu liikenne</div>
+  </div>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/map.js"></script>
+</body>
+</html>

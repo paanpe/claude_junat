@@ -1,0 +1,652 @@
+/* ==========================================================================
+   Junakartta – Suomen junaliikenne livenä
+   Tumma, kiiltävä ulkoasu. Kaaviovärit: validoitu oletuspaletti (dark).
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* Pinnat ja teksti */
+  --page: #0a0d12;
+  --surface: #12161d;
+  --surface-2: #1a1f28;
+  --glass: rgba(13, 17, 24, 0.82);
+  --border: rgba(255, 255, 255, 0.09);
+  --text: #f2f4f8;
+  --text-2: #b9c0cc;
+  --muted: #8a919d;
+
+  /* Korostus */
+  --accent: #3987e5;
+  --accent-2: #22c1a8;
+  --accent-grad: linear-gradient(100deg, #4da3ff 0%, #22c1a8 100%);
+
+  /* Junakategoriat (kartta + kaaviot, identiteettivärit) */
+  --cat-kauko: #3987e5;   /* kaukojuna  */
+  --cat-lahi: #1baf7a;    /* lähijuna   */
+  --cat-tavara: #d95926;  /* tavarajuna */
+  --cat-muu: #898781;     /* muu        */
+
+  /* Status (myöhästymiset) */
+  --st-good: #0ca30c;
+  --st-warn: #fab219;
+  --st-serious: #ec835a;
+  --st-critical: #d03b3b;
+
+  /* Sekventiaalinen sininen (ordinaaliaskeleet, dark-pinnalle) */
+  --seq-250: #86b6ef;
+  --seq-300: #6da7ec;
+  --seq-350: #5598e7;
+  --seq-400: #3987e5;
+  --seq-450: #2a78d6;
+  --seq-500: #256abf;
+
+  --header-h: 58px;
+  --radius: 14px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--page);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+a { color: var(--accent); text-decoration: none; }
+
+/* ---------- Yläpalkki ---------- */
+
+.site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-h);
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 18px;
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 19px;
+  letter-spacing: 0.2px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.brand .logo {
+  width: 30px; height: 30px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: var(--accent-grad);
+  box-shadow: 0 0 18px rgba(57, 135, 229, 0.55);
+}
+.brand .logo svg { width: 18px; height: 18px; fill: #fff; }
+
+.brand .word {
+  background: var(--accent-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.site-nav {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.site-nav a {
+  padding: 7px 14px;
+  border-radius: 999px;
+  color: var(--text-2);
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid transparent;
+  transition: background 0.15s, color 0.15s;
+}
+
+.site-nav a:hover { color: var(--text); background: rgba(255, 255, 255, 0.06); }
+
+.site-nav a.active {
+  color: #fff;
+  background: rgba(57, 135, 229, 0.18);
+  border-color: rgba(57, 135, 229, 0.45);
+  box-shadow: 0 0 14px rgba(57, 135, 229, 0.25) inset;
+}
+
+/* ---------- Sivupohja (listasivut) ---------- */
+
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: calc(var(--header-h) + 26px) 20px 60px;
+}
+
+.page-title {
+  font-size: 30px;
+  font-weight: 800;
+  margin: 0 0 4px;
+  letter-spacing: -0.3px;
+}
+.page-title .hl {
+  background: var(--accent-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.page-sub { color: var(--muted); margin: 0 0 24px; font-size: 14px; }
+
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.012)), var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* ---------- Napit, kentät, sirut ---------- */
+
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+.chip {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  padding: 6px 13px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.chip:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+.chip.active {
+  color: #fff;
+  background: rgba(57, 135, 229, 0.2);
+  border-color: rgba(57, 135, 229, 0.55);
+}
+
+.input {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input:focus {
+  border-color: rgba(57, 135, 229, 0.7);
+  box-shadow: 0 0 0 3px rgba(57, 135, 229, 0.18);
+}
+.input::placeholder { color: var(--muted); }
+
+select.input { cursor: pointer; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.badge .ic { font-size: 11px; }
+
+.badge-ontime { background: rgba(12, 163, 12, 0.16); color: #6fdc6f; }
+.badge-slight { background: rgba(250, 178, 25, 0.15); color: #fac95e; }
+.badge-late { background: rgba(236, 131, 90, 0.16); color: #f4a586; }
+.badge-verylate { background: rgba(208, 59, 59, 0.18); color: #ef8686; }
+.badge-cancelled { background: rgba(208, 59, 59, 0.28); color: #ff9d9d; }
+.badge-neutral { background: rgba(255, 255, 255, 0.08); color: var(--text-2); }
+
+.cat-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: 1px;
+  box-shadow: 0 0 6px currentColor;
+}
+.cat-dot.kauko { color: var(--cat-kauko); background: var(--cat-kauko); }
+.cat-dot.lahi { color: var(--cat-lahi); background: var(--cat-lahi); }
+.cat-dot.tavara { color: var(--cat-tavara); background: var(--cat-tavara); }
+.cat-dot.muu { color: var(--cat-muu); background: var(--cat-muu); }
+
+/* ---------- Karttasivu ---------- */
+
+#map {
+  position: fixed;
+  inset: var(--header-h) 0 0 0;
+  background: #0a0d12;
+  z-index: 1;
+}
+
+.map-panel {
+  position: fixed;
+  z-index: 1100;
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.search-panel {
+  top: calc(var(--header-h) + 14px);
+  left: 14px;
+  width: 330px;
+  max-width: calc(100vw - 28px);
+  padding: 10px;
+}
+
+.search-box { position: relative; display: flex; align-items: center; }
+.search-box svg {
+  position: absolute; left: 11px;
+  width: 15px; height: 15px;
+  fill: var(--muted);
+  pointer-events: none;
+}
+.search-box .input { width: 100%; padding-left: 34px; }
+
+.search-results {
+  margin-top: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  display: none;
+}
+.search-results.open { display: block; }
+
+.search-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.search-item:hover { background: rgba(255, 255, 255, 0.07); }
+.search-item .t { font-weight: 700; font-size: 14px; }
+.search-item .r { color: var(--muted); font-size: 12px; margin-top: 1px; }
+.search-item .spd { margin-left: auto; color: var(--text-2); font-size: 12px; white-space: nowrap; }
+.search-empty { padding: 10px; color: var(--muted); font-size: 13px; }
+
+.status-chip {
+  position: fixed;
+  top: calc(var(--header-h) + 14px);
+  right: 14px;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.status-chip b { color: var(--text); font-size: 14px; }
+.status-chip .pulse {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 0 0 rgba(34, 193, 168, 0.7);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(34, 193, 168, 0.6); }
+  70% { box-shadow: 0 0 0 9px rgba(34, 193, 168, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 193, 168, 0); }
+}
+.status-chip.error .pulse { background: var(--st-critical); animation: none; }
+
+.follow-chip {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px 9px 16px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.follow-chip.on { display: flex; }
+.follow-chip button {
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+}
+.follow-chip button:hover { background: rgba(255, 255, 255, 0.2); }
+
+.map-legend {
+  position: fixed;
+  bottom: 22px;
+  left: 14px;
+  z-index: 1050;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text-2);
+  display: grid;
+  gap: 5px;
+}
+.map-legend .lg-title { font-weight: 800; color: var(--text); font-size: 12px; margin-bottom: 2px; }
+
+/* Leaflet-mukautukset */
+
+.leaflet-container { font-family: var(--font); background: #0a0d12; }
+
+.leaflet-bar {
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow) !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+.leaflet-bar a, .leaflet-bar button {
+  background: var(--glass) !important;
+  backdrop-filter: blur(10px);
+  color: var(--text) !important;
+  border-bottom: 1px solid var(--border) !important;
+  width: 34px !important;
+  height: 34px !important;
+  line-height: 34px !important;
+}
+.leaflet-bar a:last-child { border-bottom: none !important; }
+.leaflet-bar a:hover { background: rgba(255, 255, 255, 0.12) !important; }
+
+.map-btn {
+  display: grid !important;
+  place-items: center;
+  cursor: pointer;
+}
+.map-btn svg { width: 17px; height: 17px; fill: var(--text); }
+.map-btn.active svg { fill: #4da3ff; }
+.map-btn.active { box-shadow: 0 0 12px rgba(57, 135, 229, 0.4) inset; }
+
+.leaflet-control-attribution {
+  background: rgba(10, 13, 18, 0.75) !important;
+  color: var(--muted) !important;
+  font-size: 10px !important;
+}
+.leaflet-control-attribution a { color: var(--text-2) !important; }
+
+.leaflet-popup-content-wrapper {
+  background: var(--surface-2);
+  color: var(--text);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.leaflet-popup-tip { background: var(--surface-2); border: 1px solid var(--border); }
+.leaflet-popup-content { margin: 14px 16px; font-size: 13px; line-height: 1.55; }
+.leaflet-popup-close-button { color: var(--muted) !important; }
+
+.tp-title { font-size: 16px; font-weight: 800; margin-bottom: 2px; }
+.tp-route { color: var(--text-2); font-weight: 600; margin-bottom: 8px; }
+.tp-grid { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin-bottom: 10px; }
+.tp-grid dt { color: var(--muted); }
+.tp-grid dd { margin: 0; font-weight: 600; }
+.tp-follow {
+  width: 100%;
+  border: 1px solid rgba(57, 135, 229, 0.5);
+  background: rgba(57, 135, 229, 0.16);
+  color: #9ec9ff;
+  font-weight: 700;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 7px 0;
+  border-radius: 9px;
+  cursor: pointer;
+}
+.tp-follow:hover { background: rgba(57, 135, 229, 0.28); }
+
+/* Junamerkit kartalla */
+
+.train-marker { background: none; border: none; }
+
+.train-marker .dot {
+  width: 26px; height: 26px;
+  margin: 2px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6), 0 0 14px var(--glow, rgba(57,135,229,0.55));
+  transition: transform 0.4s linear;
+}
+.train-marker .dot svg { width: 14px; height: 14px; fill: #fff; }
+.train-marker .dot .stopped { width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+
+.train-marker.cat-kauko .dot { background: var(--cat-kauko); --glow: rgba(57, 135, 229, 0.6); }
+.train-marker.cat-lahi .dot { background: var(--cat-lahi); --glow: rgba(27, 175, 122, 0.6); }
+.train-marker.cat-tavara .dot { background: var(--cat-tavara); --glow: rgba(217, 89, 38, 0.6); }
+.train-marker.cat-muu .dot { background: #5c5c58; --glow: rgba(137, 135, 129, 0.5); }
+
+.train-marker .lbl {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10, 13, 18, 0.85);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.labels-hidden .train-marker .lbl { display: none; }
+
+.train-marker.followed .dot {
+  border-color: #ffd76a;
+  box-shadow: 0 0 0 4px rgba(255, 215, 106, 0.35), 0 0 18px var(--glow, rgba(57,135,229,0.6));
+}
+
+.user-loc-dot {
+  background: #4da3ff;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(77, 163, 255, 0.9);
+}
+
+/* ---------- Junalista ---------- */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.toolbar .input[type="search"] { flex: 1 1 220px; min-width: 180px; }
+.toolbar .spacer { flex: 1; }
+
+.summary-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.summary-chips .badge { font-size: 13px; padding: 6px 13px; }
+
+.train-list { overflow: hidden; }
+
+.train-row {
+  display: grid;
+  grid-template-columns: 200px 1fr 96px 140px 200px 90px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.train-row:last-child { border-bottom: none; }
+.train-row:hover { background: rgba(57, 135, 229, 0.08); }
+
+.train-row.head {
+  cursor: default;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.025);
+}
+.train-row.head:hover { background: rgba(255, 255, 255, 0.025); }
+
+.tr-name { font-weight: 800; font-size: 15px; white-space: nowrap; }
+.tr-name .sub { display: block; font-weight: 600; font-size: 12px; color: var(--muted); }
+.tr-route { color: var(--text-2); font-weight: 600; font-size: 14px; }
+.tr-route .arrow { color: var(--accent); margin: 0 5px; }
+.tr-speed { font-weight: 700; font-variant-numeric: tabular-nums; }
+.tr-speed .u { color: var(--muted); font-weight: 500; font-size: 12px; }
+.tr-next { color: var(--text-2); font-size: 13px; }
+.tr-next b { color: var(--text); }
+.tr-op { color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+
+.list-empty { padding: 40px; text-align: center; color: var(--muted); }
+
+/* ---------- Tilastot ---------- */
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-bottom: 26px;
+}
+
+.tile { padding: 18px 20px; position: relative; overflow: hidden; }
+.tile::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--accent-grad);
+  opacity: 0.8;
+}
+.tile .t-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.tile .t-value { font-size: 34px; font-weight: 800; line-height: 1.1; letter-spacing: -0.5px; }
+.tile .t-value .u { font-size: 16px; font-weight: 600; color: var(--text-2); margin-left: 3px; }
+.tile .t-sub { font-size: 13px; color: var(--text-2); margin-top: 5px; }
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 14px;
+}
+
+.chart-card { padding: 20px 22px; }
+.chart-card h3 { margin: 0 0 4px; font-size: 16px; font-weight: 800; }
+.chart-card .ch-sub { color: var(--muted); font-size: 12.5px; margin: 0 0 16px; }
+
+.hbar-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 52px;
+  gap: 10px;
+  align-items: center;
+  padding: 5px 0;
+  border-radius: 8px;
+}
+.hbar-row:hover { background: rgba(255, 255, 255, 0.04); }
+.hbar-name { font-size: 13px; font-weight: 600; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hbar-track { height: 16px; border-radius: 4px; background: rgba(255, 255, 255, 0.045); overflow: hidden; }
+.hbar-fill {
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  background: var(--seq-400);
+  min-width: 2px;
+  transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hbar-val { font-size: 13px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+
+.top-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.top-table td { padding: 7px 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+.top-table tr:last-child td { border-bottom: none; }
+.top-table tr:hover td { background: rgba(255, 255, 255, 0.03); }
+.top-table .n { font-weight: 800; white-space: nowrap; }
+.top-table .r { color: var(--muted); font-size: 12.5px; }
+.top-table .v { text-align: right; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+.updated-note { color: var(--muted); font-size: 12.5px; margin-top: 22px; }
+
+.error-banner {
+  display: none;
+  background: rgba(208, 59, 59, 0.14);
+  border: 1px solid rgba(208, 59, 59, 0.4);
+  color: #ff9d9d;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.error-banner.on { display: block; }
+
+.skel { color: var(--muted); padding: 26px; text-align: center; }
+.skel .spin {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: -4px;
+  margin-right: 9px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.site-footer {
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+  padding: 26px 16px 10px;
+}
+
+/* ---------- Mobiili ---------- */
+
+@media (max-width: 860px) {
+  .train-row { grid-template-columns: 1fr 1fr; padding: 12px 14px; }
+  .train-row.head { display: none; }
+  .tr-next { grid-column: 1 / -1; }
+  .tr-op { display: none; }
+  .site-nav a { padding: 6px 10px; font-size: 13px; }
+  .brand span.word { display: none; }
+  .search-panel { width: calc(100vw - 28px); }
+  .status-chip { top: auto; bottom: 84px; right: 10px; }
+  .map-legend { display: none; }
+  .page-title { font-size: 24px; }
+}
