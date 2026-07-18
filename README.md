@@ -2,8 +2,9 @@
 
 Interaktiivinen selainsovellus, joka näyttää **Suomen junaliikenteen livenä**
 [Fintrafficin Digitraffic-rajapinnan](https://www.digitraffic.fi/rautatieliikenne/) avoimilla tiedoilla.
-Junat liikkuvat kartalla reaaliajassa, kulussa olevat junat voi selata listana ja
-liikenteen tunnusluvut lasketaan lennossa.
+Junat liikkuvat kartalla reaaliajassa, kulussa olevat junat voi selata listana,
+junatyypit (IC, S, PYO, HDM, T ym.) on esitelty omalla sivullaan ja liikenteen
+tunnusluvut lasketaan lennossa – junatyypeittäin suodatettuina.
 
 **➡️ Kokeile livenä: [paanpe.github.io/claude_junat](https://paanpe.github.io/claude_junat/)**
 
@@ -86,9 +87,13 @@ Luvut päivittyvät minuutin välein.
 
 ## Kuvakaappaukset
 
-| Kulussa olevat junat | Tilastot |
+| Kulussa olevat junat | Junatyypit |
 |---|---|
-| ![Kulussa olevat junat -sivu](docs/kuvat/junat.png) | ![Tilastosivu](docs/kuvat/tilastot.png) |
+| ![Kulussa olevat junat -sivu](docs/kuvat/junat.png) | ![Junatyypit-sivu](docs/kuvat/junatyypit.png) |
+
+| Tilastot junatyyppisuodattimineen | |
+|---|---|
+| ![Tilastosivu](docs/kuvat/tilastot.png) | |
 
 *(Kuvat on otettu sovelluksen kehitystilasta; karttanäkymän näet parhaiten
 [live-sivustolla](https://paanpe.github.io/claude_junat/).)*
@@ -145,7 +150,7 @@ sovellus ei riipu CDN-palveluista.
 └── .nojekyll                    # Estää Jekyll-käsittelyn Pagesissa
 ```
 
-Kaikki kolme sivua jakavat saman `api.js`-kerroksen, joka hoitaa HTTP-kutsut
+Kaikki neljä sivua jakavat saman `api.js`-kerroksen, joka hoitaa HTTP-kutsut
 (mukaan lukien `Digitraffic-User`-tunnisteotsakkeen ja CORS-varautumisen),
 aikamuotoilut sekä junadatan tulkinnan (reitti, myöhästyminen, seuraava
 pysähdys, junatyyppi).
@@ -164,7 +169,8 @@ CORS-pyynnöt.
 
 Karttatasot:
 
-- Taustakartta: [CARTO Dark Matter](https://carto.com/) (© OpenStreetMap © CARTO)
+- Taustakartat: [CARTO](https://carto.com/) Voyager (selkeä, oletus) ja
+  Dark Matter (tumma) (© OpenStreetMap © CARTO)
 - Rataverkko: [OpenRailwayMap](https://www.openrailwaymap.org/) (CC-BY-SA)
 
 ## Julkaisu GitHub Pagesiin
@@ -193,12 +199,17 @@ Repo noudattaa kevyttä feature branch -mallia:
 - **Kehitys tehdään feature-haaroissa** (esim.
   `claude/finnish-train-map-app-pefo7b`), joissa muutokset committoidaan
   pienissä, kuvaavissa erissä suomenkielisin commit-viestein.
-- **Muutokset yhdistetään pull requestilla** `main`-haaraan
-  (esim. [PR #1](https://github.com/paanpe/claude_junat/pull/1), jolla
-  sovellus ja julkaisutyönkulku tuotiin repoon). PR kokoaa muutokset
-  katselmoitavaksi ennen julkaisua.
-- Mergen jälkeen feature-haara aloitetaan tarvittaessa uudelleen tuoreesta
-  `main`-haarasta, jotta uusi työ ei kasaudu jo yhdistetyn historian päälle.
+- **Muutokset yhdistetään pull requestilla** `main`-haaraan. PR kokoaa
+  muutokset katselmoitavaksi ennen julkaisua. Tähän mennessä mergetyt:
+  - [PR #1](https://github.com/paanpe/claude_junat/pull/1) – sovellus ja
+    Pages-julkaisutyönkulku
+  - [PR #2](https://github.com/paanpe/claude_junat/pull/2) – README-laajennus
+    kuvineen
+  - [PR #3](https://github.com/paanpe/claude_junat/pull/3) – selkeä
+    karttapohja, junatyyppisuodattimet ja Junatyypit-sivu
+- Mergen jälkeen feature-haara aloitetaan uudelleen tuoreesta
+  `main`-haarasta (tai rebasetaan sen päälle), jotta uusi työ ei kasaudu jo
+  yhdistetyn historian päälle.
 
 ## Lisenssit ja attribuutiot
 
